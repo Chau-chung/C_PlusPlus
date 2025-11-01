@@ -20,14 +20,14 @@ namespace key_value
 			, _right(nullptr)
 			, _kv(kv)
 			, _bf(0)
-		{
-		}
+		{}
 	};
 
 	template <class K, class V>
 	class AVLTree
 	{
 		typedef AVLTreeNode<K, V> Node;
+		
 	public:
 		bool Insert(const pair<K, V>& kv)
 		{
@@ -224,6 +224,7 @@ namespace key_value
 			std::cout << root->_kv.first << ":" << root->_kv.second << std::endl;
 			_InOrder(root->_right);
 		}
+
 	private:
 		Node* _root = nullptr;
 	};
