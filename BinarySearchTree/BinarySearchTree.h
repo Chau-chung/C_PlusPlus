@@ -21,6 +21,7 @@ namespace key
 	class BSTree
 	{
 		typedef BSTreeNode<K> Node;
+
 	public:
 		bool Insert(const K& key)
 		{
@@ -192,6 +193,7 @@ namespace key
 			std::cout << root->_key << " ";
 			_InOrder(root->_right);
 		}
+
 	private:
 		Node* _root = nullptr;
 	};
@@ -219,6 +221,7 @@ namespace key_value
 	class BSTree
 	{
 		typedef BSTreeNode<K, V> Node;
+
 	public:
 		bool Insert(const K& key, const V& value)
 		{
@@ -391,6 +394,7 @@ namespace key_value
 			std::cout << root->_key << ":" << root->_value << std::endl;
 			_InOrder(root->_right);
 		}
+		
 	private:
 		Node* _root = nullptr;
 	};
