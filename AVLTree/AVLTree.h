@@ -106,9 +106,9 @@ namespace key_value
 					{
 						RotateRL(parent);
 					}
-					else // parent->_bf == 2 && cur->_bf == -1
+					else if (parent->_bf == 2 && cur->_bf == -1)
 					{
-						
+						RotateLR(parent);
 					}
 				}
 			}
