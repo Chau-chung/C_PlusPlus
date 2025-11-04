@@ -182,6 +182,8 @@ namespace key
 		void InOrder()
 		{
 			_InOrder(_root);
+
+			std::cout << std::endl;
 		}
 
 	private:
@@ -383,6 +385,8 @@ namespace key_value
 		void InOrder()
 		{
 			_InOrder(_root);
+
+			std::cout << std::endl;
 		}
 
 	private:
@@ -394,7 +398,7 @@ namespace key_value
 			std::cout << root->_key << ":" << root->_value << std::endl;
 			_InOrder(root->_right);
 		}
-		
+
 	private:
 		Node* _root = nullptr;
 	};
