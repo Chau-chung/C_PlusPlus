@@ -27,7 +27,7 @@ namespace key_value
 	class AVLTree
 	{
 		typedef AVLTreeNode<K, V> Node;
-		
+
 	public:
 		bool Insert(const pair<K, V>& kv)
 		{
@@ -104,12 +104,18 @@ namespace key_value
 					}
 					else if (parent->_bf == -2 && cur->_bf == 1)
 					{
-						RotateRL(parent);
+						RotateLR(parent);
 					}
 					else if (parent->_bf == 2 && cur->_bf == -1)
 					{
-						RotateLR(parent);
+						RotateRL(parent);
 					}
+
+					break;
+				}
+				else
+				{
+					assert(false);
 				}
 			}
 
@@ -145,6 +151,7 @@ namespace key_value
 
 			parent->_right = subRL;
 			if (subRL) subRL->_parent = parent;
+
 			subR->_left = parent;
 
 			Node* ppNode = parent->_parent;
@@ -165,6 +172,7 @@ namespace key_value
 				{
 					ppNode->_right = subR;
 				}
+
 				subR->_parent = ppNode;
 			}
 
@@ -178,6 +186,7 @@ namespace key_value
 
 			parent->_left = subLR;
 			if (subLR) subLR->_parent = parent;
+
 			subL->_right = parent;
 
 			Node* ppNode = parent->_parent;
@@ -198,24 +207,128 @@ namespace key_value
 				{
 					ppNode->_right = subL;
 				}
+
 				subL->_parent = ppNode;
 			}
 
 			parent->_bf = subL->_bf = 0;
 		}
 
+		void RotateLR(Node* parent)
+		{
+			Node* subL = parent->_left;
+			Node* subLR = subL->_right;
+
+			int bf = subLR->_bf;
+
+			RotateL(subL);
+			RotateR(parent);
+
+			subLR->_bf = 0;
+			if (bf == -1)
+			{
+				subL->_bf = 0;
+				parent->_bf = 1;
+			}
+			else if (bf == 1)
+			{
+				subL->_bf = -1;
+				parent->_bf = 0;
+			}
+			else if (bf == 0)
+			{
+				subL->_bf = 0;
+				parent->_bf = 0;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+
 		void RotateRL(Node* parent)
 		{
-			RotateR(parent->_right);
+			Node* subR = parent->_right;
+			Node* subRL = subR->_left;
+
+			int bf = subRL->_bf;
+
+			RotateR(subR);
 			RotateL(parent);
+
+			subRL->_bf = 0;
+			if (bf == -1)
+			{
+				subR->_bf = 1;
+				parent->_bf = 0;
+			}
+			else if (bf == 1)
+			{
+				subR->_bf = 0;
+				parent->_bf = -1;
+			}
+			else if (bf == 0)
+			{
+				subR->_bf = 0;
+				parent->_bf = 0;
+			}
+			else
+			{
+				assert(false);
+			}
+		}
+  
+		int Size()
+		{
+			return _Size(_root);
+		}
+
+		int Height()
+		{
+			return _Height(_root);
+		}
+
+		bool IsBalanced()
+		{
+			return _IsBalanced(_root);
 		}
 
 		void InOrder()
 		{
 			_InOrder(_root);
+
+			std::cout << std::endl;
 		}
 
 	private:
+		int _Size(Node* root)
+		{
+			return root == nullptr ? 0 : 1 + _Size(root->_left) + _Size(root->_right);
+		}
+
+		int _Height(Node* root)
+		{
+			if (root == nullptr) return 0;
+			
+			return 1 + max(_Height(root->_left), _Height(root->_right));
+		}
+
+		bool _IsBalanced(Node* root)
+		{
+			if (root == nullptr) return true;
+
+			int leftHeight = _Height(root->_left);
+			int rightHeight = _Height(root->_right);
+
+			// unbalanced
+			if (abs(leftHeight - rightHeight) > 1) return false;
+
+			if (rightHeight - leftHeight != root->_bf) return false;
+
+			return _IsBalanced(root->_left) 
+				&& _IsBalanced(root->_right);
+		}
+
 		void _InOrder(Node* root)
 		{
 			if (root == nullptr) return;
