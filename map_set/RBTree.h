@@ -25,12 +25,87 @@ struct RBTreeNode
 	{}
 };
 
+template <class T, class Ref, class Ptr>
+struct __RBTreeIterator
+{
+	typedef RBTreeNode<T> Node;
+	typedef __RBTreeIterator<T, Ref, Ptr> Self;
+
+	Node* _node;
+
+	__RBTreeIterator(Node* node)
+		: _node(node)
+	{}
+
+	T& operator*()
+	{
+		return _node->_data;
+	}
+
+	Ref operator->()
+	{
+		return &_node->_data;
+	}
+
+	bool operator!=(const Self& s) const
+	{
+		return _node != s._node;
+	}
+	
+	Ref operator++()
+	{
+		// 1. If there is a right subtree, go down to leftmost node in right subtree
+		if (_node->_right)
+		{
+			Node* leftMin = _node->_right;
+			while (leftMin && leftMin->_left)
+			{
+				leftMin = leftMin->_left;
+			}
+
+			_node = leftMin;
+		}
+		else // 2. No right subtree, go up until we find a node that is left child of its parent
+		{
+			Node* cur = _node;
+			Node* parent = cur->_parent;
+			while (parent && cur == parent->_right)
+			{
+				cur = parent;
+				parent = parent->_parent;
+			}
+
+			_node = parent;
+		}
+
+		return *this;
+	}
+};
+
 template <class K, class T, class KeyOfT>
 class RBTree
 {
 	typedef RBTreeNode<T> Node;
 
 public:
+	typedef __RBTreeIterator<T, T&, T*> Iterator;
+
+	Iterator Begin()
+	{
+		Node* leftMin = _root;
+		while (leftMin && leftMin->_left)
+		{
+			leftMin = leftMin->_left;
+		}
+
+		return Iterator(leftMin);
+	}
+
+	Iterator End()
+	{
+		return Iterator(nullptr);
+	}
+
 	Node* Find(const K& key);
 
 	bool Insert(const T& data)
@@ -64,9 +139,9 @@ public:
 			}
 		}
 
-		cur = new Node(T);
+		cur = new Node(data);
 		cur->_col = RED; // New nodes are red
-		if (kv.first < parent->_kv.first)
+		if (kot(data) < kot(parent->_data))
 		{
 			parent->_left = cur;
 		}

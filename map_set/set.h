@@ -13,7 +13,25 @@ namespace sl
 			}
 		};
 
+	public:
+		typedef typename RBTree<K, const K, SetKeyOfT>::Iterator iterator;
+
+		iterator begin()
+		{
+			return _t.Begin();
+		}
+
+		iterator end()
+		{
+			return _t.End();
+		}
+
+		bool insert(const K& key)
+		{
+			return _t.Insert(key);
+		}
+
 	private:
-		RBtree<K, K, SetKeyOfT> _t;
+		RBTree<K, const K, SetKeyOfT> _t;
 	};
 }

@@ -2,7 +2,7 @@
 
 namespace sl
 {
-	template <class K>
+	template <class K, class V>
 	class map
 	{
 		struct MapKeyOfT
@@ -13,7 +13,25 @@ namespace sl
 			}
 		};
 
+	public:
+		typedef typename RBTree<K, pair<const K, V>, MapKeyOfT>::Iterator iterator;
+
+		iterator begin()
+		{
+			return _t.Begin();
+		}
+
+		iterator end()
+		{
+			return _t.End();
+		}
+
+		bool insert(const pair<K, V>& kv)
+		{
+			return _t.Insert(kv);
+		}
+
 	private:
-		RBtree<K, pair<K, V>, MapKeyOfT> _t;
+		RBTree<K, pair<const K, V>, MapKeyOfT> _t;
 	};
 }
