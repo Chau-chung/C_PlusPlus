@@ -7,7 +7,7 @@ namespace sl
 	{
 		struct SetKeyOfT
 		{
-			const K& operator()(const K& key) 
+			const K& operator()(const K& key)
 			{
 				return key;
 			}
@@ -15,6 +15,7 @@ namespace sl
 
 	public:
 		typedef typename RBTree<K, const K, SetKeyOfT>::Iterator iterator;
+		typedef typename RBTree<K, const K, SetKeyOfT>::ConstIterator const_iterator;
 
 		iterator begin()
 		{
@@ -26,7 +27,22 @@ namespace sl
 			return _t.End();
 		}
 
-		bool insert(const K& key)
+		const_iterator begin() const
+		{
+			return _t.Begin();
+		}
+
+		const_iterator end() const
+		{
+			return _t.End();
+		}
+
+		iterator find(const K& key)
+		{
+			return _t.Find(key);
+		}
+
+		std::pair<iterator, bool>   insert(const K& key)
 		{
 			return _t.Insert(key);
 		}

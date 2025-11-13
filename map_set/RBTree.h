@@ -37,39 +37,72 @@ struct __RBTreeIterator
 		: _node(node)
 	{}
 
-	T& operator*()
+	Ref operator*()
 	{
 		return _node->_data;
 	}
 
-	Ref operator->()
+	Ptr operator->()
 	{
 		return &_node->_data;
+	}
+
+	bool operator==(const Self& s) const
+	{
+		return _node == s._node;
 	}
 
 	bool operator!=(const Self& s) const
 	{
 		return _node != s._node;
 	}
-	
-	Ref operator++()
+
+	Self& operator++()
 	{
 		// 1. If there is a right subtree, go down to leftmost node in right subtree
 		if (_node->_right)
 		{
-			Node* leftMin = _node->_right;
-			while (leftMin && leftMin->_left)
+			Node* leftMost = _node->_right;
+			while (leftMost->_left)
 			{
-				leftMin = leftMin->_left;
+				leftMost = leftMost->_left;
 			}
 
-			_node = leftMin;
+			_node = leftMost;
 		}
 		else // 2. No right subtree, go up until we find a node that is left child of its parent
 		{
 			Node* cur = _node;
 			Node* parent = cur->_parent;
 			while (parent && cur == parent->_right)
+			{
+				cur = parent;
+				parent = parent->_parent;
+			}
+
+			_node = parent;
+		}
+
+		return *this;
+	}
+
+	Self& operator--()
+	{
+		// 1. If there is a left subtree, go down to rightmost node in left subtree
+		if (_node->_left)
+		{
+			Node* rightMost = _node->_left;
+			while (rightMost && rightMost->_right)
+			{
+				rightMost = rightMost->_right;
+			}
+			_node = rightMost;
+		}
+		else // 2. No left subtree, go up until we find a node that is right child of its parent
+		{
+			Node* cur = _node;
+			Node* parent = cur->_parent;
+			while (parent && cur == parent->_left)
 			{
 				cur = parent;
 				parent = parent->_parent;
@@ -89,16 +122,37 @@ class RBTree
 
 public:
 	typedef __RBTreeIterator<T, T&, T*> Iterator;
+	typedef __RBTreeIterator<T, const T&, const T*> ConstIterator;
+
+	RBTree() = default;
+
+	RBTree(const RBTree<K, T, KeyOfT>& t)
+	{
+		_root = Copy(t._root);
+	}
+
+	RBTree<K, T, KeyOfT>& operator=(const RBTree<K, T, KeyOfT>& t)
+	{
+		swap(_root, t._root); 
+
+		return *this;
+	}
+
+	~RBTree()
+	{
+		Destroy(_root);
+		_root = nullptr;
+	}
 
 	Iterator Begin()
 	{
-		Node* leftMin = _root;
-		while (leftMin && leftMin->_left)
+		Node* leftMost = _root;
+		while (leftMost && leftMost->_left)
 		{
-			leftMin = leftMin->_left;
+			leftMost = leftMost->_left;
 		}
 
-		return Iterator(leftMin);
+		return Iterator(leftMost);
 	}
 
 	Iterator End()
@@ -106,15 +160,53 @@ public:
 		return Iterator(nullptr);
 	}
 
-	Node* Find(const K& key);
+	ConstIterator Begin() const
+	{
+		Node* leftMost = _root;
+		while (leftMost && leftMost->_left)
+		{
+			leftMost = leftMost->_left;
+		}
 
-	bool Insert(const T& data)
+		return ConstIterator(leftMost);
+	}
+
+	ConstIterator End() const
+	{
+		return ConstIterator(nullptr);
+	}
+
+	Iterator* Find(const K& key)
+	{
+		KeyOfT kot;
+		Node* cur = _root;
+
+		while (cur)
+		{
+			if (key < kot(cur->_data))
+			{
+				cur = cur->_left;
+			}
+			else if (key > kot(cur->_data))
+			{
+				cur = cur->_right;
+			}
+			else
+			{
+				return Iterator(cur);
+			}
+		}
+
+		return End();
+	}
+
+	std::pair<Iterator, bool> Insert(const T& data)
 	{
 		if (_root == nullptr)
 		{
 			_root = new Node(data);
 			_root->_col = BLACK;
-			return true;
+			return std::make_pair(Iterator(_root), true);
 		}
 
 		KeyOfT kot;
@@ -135,11 +227,12 @@ public:
 			}
 			else
 			{
-				return false;
+				return std::make_pair(Iterator(cur), false);
 			}
 		}
 
 		cur = new Node(data);
+		Node* newNode = cur;
 		cur->_col = RED; // New nodes are red
 		if (kot(data) < kot(parent->_data))
 		{
@@ -237,7 +330,7 @@ public:
 
 		_root->_col = BLACK;
 
-		return true;
+		return std::make_pair(Iterator(cur), true);
 	}
 
 	void RotateL(Node* parent)
@@ -330,14 +423,41 @@ public:
 	}
 
 private:
+	Node* Copy(Node* root)
+	{
+		if (root == nullptr) return nullptr;
+
+		Node* newroot = new Node(root->_data);
+		newroot->_col = root->_col;
+
+		newroot->_left = Copy(root->_left);
+		if (newroot->_left) newroot->_left->_parent = newroot;
+
+		newroot->_right = Copy(root->_right);
+		if (newroot->_right) newroot->_right->_parent = newroot;
+
+		return newroot;
+	}
+
+	void Destroy(Node* root)
+	{
+		if (root == nullptr) return;
+
+		Destroy(root->_left);
+		Destroy(root->_right);
+
+		delete root;
+		// root = nullptr;
+	}
+
 	bool Check(Node* root, int blackNum, const int refNum)
 	{
 		if (root == nullptr)
-		{	
+		{
 			// std::cout << blackNum << std::endl;
 			if (blackNum != refNum)
 			{
-				std::cout << "Black height violation, expected: " 
+				std::cout << "Black height violation, expected: "
 					<< refNum << ", actual: " << blackNum << std::endl;
 				return false;
 			}
@@ -351,9 +471,9 @@ private:
 			return false;
 		}
 
-		if(root->_col == BLACK) ++blackNum;
+		if (root->_col == BLACK) ++blackNum;
 
-		return Check(root->_left, blackNum, refNum) 
+		return Check(root->_left, blackNum, refNum)
 			&& Check(root->_right, blackNum, refNum);
 	}
 
