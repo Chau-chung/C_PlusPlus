@@ -42,7 +42,7 @@ namespace sl
 			return _t.Find(key);
 		}
 
-		std::pair<iterator, bool>   insert(const K& key)
+		std::pair<iterator, bool> insert(const K& key)
 		{
 			return _t.Insert(key);
 		}
