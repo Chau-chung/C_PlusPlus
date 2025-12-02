@@ -187,25 +187,140 @@ private:
 // 引用的意义是减少拷贝，提高效率
 
 // 左值引用的场景
-void func1(const string& s);
-string& func2();
+//void func1(const string& s);
+//string& func2();
 // 左值引用返回值的问题没有彻底解决，如果返回值是func2的局部对象，不能引用返回
+
+//int main()
+//{
+//	// 右值引用
+//	std::string&& s1 = std::string("hello");
+//	// s1是左值（右值引用本身是左值）-- 右值引用属性是左值 意义-> 为了移动构造移动赋值，转移资源的语法逻辑自洽
+//	// 只有右值引用本身处理成左值，才能实现移动构造和移动赋值，转移资源
+//	cout << &s1 << endl;
+//	//cout<<&std::string("hello")<<endl; // 不能取地址
+//
+//	std::string& s2 = s1;
+//	
+//	//std::string& s3 = (std::string&)std::string("hello");
+//	std::string&& s3 = std::string("hello");
+//	std::string& s4 = s3;
+//	
+//
+//	return 0;
+//}
+
+//void Func(int& x) { cout << "左值引用" << endl; }
+//void Func(const int& x) { cout << "const 左值引用" << endl; }
+//void Func(int&& x) { cout << "右值引用" << endl; }
+//void Func(const int&& x) { cout << "const 右值引用" << endl; }
+//
+//// 函数模板 -- 万能引用 std::forward<T>(t)在传参的过程中保持了t的原生类型属性
+//template <typename T>
+//void PerfectForward(T&& t)
+//{
+//	//Func((T&&)t);
+//	Func(std::forward<T>(t));
+//}
+
+//int main()
+//{
+//	PerfectForward(10); // 右值
+//
+//	int a;
+//	PerfectForward(a); // 左值
+//	PerfectForward(std::move(a)); // 右值
+//
+//	const int b = 20;
+//	PerfectForward(b); // const 左值
+//	PerfectForward(std::move(b)); // const 右值
+//
+//	return 0;
+//}
+
+#include <algorithm>
+
+struct Goods
+{
+	string _name; // 名字
+	double _price; // 价格
+	int _evaluate; // 评价
+
+	Goods(const char* str, double price, int evaluate)
+		:_name(str)
+		, _price(price)
+		, _evaluate(evaluate)
+	{}
+};
+
+struct ComparePriceLess
+{
+	bool operator()(const Goods& gl, const Goods& gr)
+	{
+		return gl._price < gr._price;
+	}
+};
+
+struct ComparePriceGreater
+{
+	bool operator()(const Goods& gl, const Goods& gr)
+	{
+		return gl._price > gr._price;
+	}
+};
 
 int main()
 {
-	// 右值引用
-	std::string&& s1 = std::string("hello");
-	// s1是左值（右值引用本身是左值）-- 右值引用属性是左值 意义-> 为了移动构造移动赋值，转移资源的语法逻辑自洽
-	// 只有右值引用本身处理成左值，才能实现移动构造和移动赋值，转移资源
-	cout << &s1 << endl;
-	//cout<<&std::string("hello")<<endl; // 不能取地址
+	vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2,
+	3 }, { "菠萝", 1.5, 4 } };
 
-	std::string& s2 = s1;
-	
-	//std::string& s3 = (std::string&)std::string("hello");
-	std::string&& s3 = std::string("hello");
-	std::string& s4 = s3;
-	
+	sort(v.begin(), v.end(), ComparePriceLess());
+	sort(v.begin(), v.end(), ComparePriceGreater());
+
+	auto priceLess = [](const Goods& g1, const Goods& g2) 
+	{
+		return g1._price < g2._price; 
+	};
+
+	sort(v.begin(), v.end(), priceLess);
+	cout << typeid(priceLess).name() << endl;
+
+	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2) 
+		{
+			return g1._price < g2._price; 
+		});
+
+	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)
+		{
+			return g1._price > g2._price;
+		});
+
+	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)
+		{
+			return g1._evaluate < g2._evaluate;
+		});
+
+	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)
+		{
+			return g1._evaluate > g2._evaluate;
+		});
+
+
+	// lambda表达式 -- 匿名函数
 
 	return 0;
 }
+
+//int main()
+//{
+//	// lamda
+//	auto add1 = [](int a, int b)->int { return a + b; };
+//	auto add2 = [](int a, int b){ return a + b; };
+//	auto func1 = [] {cout << "hello" << endl; };
+//
+//	cout << add1(1, 2) << endl;
+//	cout << add2(3, 4) << endl;
+//	func1();
+//
+//	return 0;
+//}
