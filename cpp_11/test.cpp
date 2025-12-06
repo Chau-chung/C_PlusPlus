@@ -313,7 +313,7 @@ int main()
 
 //int main()
 //{
-//	// lamda
+//	// lambda
 //	auto add1 = [](int a, int b)->int { return a + b; };
 //	auto add2 = [](int a, int b){ return a + b; };
 //	auto func1 = [] {cout << "hello" << endl; };
@@ -324,6 +324,139 @@ int main()
 //
 //	return 0;
 //}
+
+//int main()
+//{
+//	int a = 1, b = 2;
+//	auto swap1 = [](int& x, int& y)
+//	{
+//		int tmp = x;
+//		x = y;
+//		y = tmp;
+//	};
+//
+//	swap1(a, b);
+//
+//	// 捕捉a b对象给lambda
+//	// mutable可以修改传值捕捉对象 -- 一般不常用
+//	// a b是拷贝过来的 不改变外面的a b
+//	auto swap2 = [a, b]() mutable
+//	{
+//			int tmp = a;
+//			a = b;
+//			b = tmp;
+//	};
+//
+//	swap2();
+//
+//	// 引用方式捕捉
+//	auto swap3 = [&a, &b]()
+//	{
+//		int tmp = a;
+//		a = b;
+//		b = tmp;
+//	};
+//
+//	swap3();
+//
+//	return 0;
+//}
+
+//int main()
+//{
+//	int a = 1, b = 2, c = 3, d = 4;
+//	auto func1 = [=]()
+//	{
+//		return a + b - c * d;
+//	};
+//
+//	auto func2 = [&]()
+//	{
+//		++a;
+//		++b;
+//		++c;
+//		++d;
+//	};
+//
+//	// 混合捕捉，传引用捕捉所有对象，但是c d传值捕捉
+//	auto func3 = [&, c, d]
+//	{
+//		++a;
+//		++b;
+//		//++c; // error
+//		//++d; // error
+//	};
+//
+//	return 0;
+//}
+//
+//class HeapOnly
+//{
+//public:
+//	static HeapOnly* CreateObj()
+//	{
+//		return new HeapOnly;
+//	}
+//
+//	// C++11
+//	HeapOnly(const HeapOnly&) = delete;
+//
+//	// C++98 私有+只声明不实现
+//private:
+//	//HeapOnly(const HeapOnly&);
+//
+//	HeapOnly()
+//	{}
+//	
+//	int _a = 1;
+//};
+//
+//int main()
+//{
+//	//HeapOnly ho1;
+//	//HeapOnly* p1 = new HeapOnly;
+//	HeapOnly* p2 = HeapOnly::CreateObj();
+//
+//	//不能被拷贝，才能禁止
+//	HeapOnly obj(*p2);
+//	
+//	return 0;
+//}
+
+// 编译时，参数推导递归
+void _Cpp_Printf()
+{
+	cout << endl;
+}
+
+template <class T, class ...Args>
+void _Cpp_Printf(const T& val, Args... args)
+{
+	cout << val << endl;
+
+	_Cpp_Printf(args...);
+}
+
+template <class ...Args>
+void Cpp_Printf(Args... args)
+{
+	_Cpp_Printf(args...);
+}
+
+template <class T>
+int PrintArg(T t)
+{
+	cout << t << " ";
+	return 0;
+}
+
+template <class ...Args>
+void Cpp_Printf2(Args... args)
+{
+	// 编译时推导，args...参数有几个值，PrintArg就会调用几次，就有几个返回值，arr就开多大
+	int arr[] = { PrintArg(args)... };
+	cout << endl;
+}
 
 int main()
 {
