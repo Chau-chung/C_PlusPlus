@@ -460,5 +460,6 @@ void Cpp_Printf2(Args... args)
 
 int main()
 {
+
 	return 0;
 }
