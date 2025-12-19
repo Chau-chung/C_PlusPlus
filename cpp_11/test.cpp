@@ -458,9 +458,137 @@ void Cpp_Printf2(Args... args)
 	cout << endl;
 }
 
+#include <functional>
+
+// 不是定义可调用对象，包装可调用对象
+
+//int f(int a, int b)
+//{
+//	return a + b;
+//}
+//
+//struct Functor
+//{
+//public:
+//	int operator()(int a, int b)
+//	{
+//		return a + b;
+//	}
+//};
+//
+//int main()
+//{
+//	function<int(int, int)> fc1;
+//
+//	//function<int(int, int)> fc2(f);
+//	function<int(int, int)> fc2 = f;
+//	function<int(int, int)> fc3 = Functor();
+//	function<int(int, int)> fc4 = [](int x, int y) { return x + y; };
+//
+//	cout << fc2(1, 2) << endl;
+//	cout << fc3(3, 4) << endl;
+//	cout << fc4(5, 6) << endl;
+//
+//	return 0;
+//}
+
+//class Plus
+//{
+//public:
+//	static int plusi(int a, int b)
+//	{
+//		return a + b;
+//	}
+//
+//	double plusd(double a, double b)
+//	{
+//		return a + b;
+//	}
+//};
+//
+//int main()
+//{
+//	// 成员函数的函数指针 &类型::函数名
+//	function<int(int, int)> fc1 = &Plus::plusi;
+//	cout << fc1(1, 2) << endl;
+//
+//	function<double(Plus*, double, double)> fc2 = &Plus::plusd;
+//	Plus plus;
+//	cout << fc2(&plus, 1.1, 2.2) << endl;
+//
+//	function<double(Plus, double, double)> fc3 = &Plus::plusd;
+//	cout << fc3(Plus(), 1.1, 2.2) << endl;
+//
+//	return 0;
+//}
+
+//int Sub(int a, int b)
+//{
+//	return a - b;
+//}
+
+class Sub
+{
+public:
+	int sub(int a, int b)
+	{
+		return a - b;
+	}
+};
+
+void fx(const string& name, int x, int y)
+{
+	cout << name << "->[" << "血量：" << x << " 蓝：" << y << "]" << endl;
+}
+
+// 调整可调用对象的参数个数或者顺序
+
 int main()
 {
+	//auto f1 = Sub;
+	//cout << f1(10, 5) << endl;
 
+	//// 调整顺序
+	//auto f2 = bind(Sub, placeholders::_2, placeholders::_1);
+	//cout << f2(10, 5) << endl;
+
+	//cout << typeid(f1).name() << endl;
+	//cout << typeid(f2).name() << endl;
+
+	auto f3 = bind(&Sub::sub, placeholders::_1, placeholders::_2, placeholders::_3);
+	cout << f3(Sub(), 10, 5) << endl;
+
+	Sub sub;
+	cout << f3(&sub, 10, 5) << endl;
+
+	auto f4 = bind(&Sub::sub, Sub(), placeholders::_1, placeholders::_2);
+	cout << f4(10, 5) << endl;
+
+	auto f5 = bind(&Sub::sub, &sub, placeholders::_1, placeholders::_2);
+	cout << f5(10, 5) << endl;
+
+	fx("王昭君", 80, 20);
+	fx("王昭君", 85, 10);
+	fx("王昭君", 90, 0);
+	fx("王昭君", 99, 99);
+
+	fx("亚瑟", 99, 85);
+	fx("亚瑟", 91, 80);
+	fx("亚瑟", 5, 20);
+
+	auto f6 = bind(fx, "王昭君", placeholders::_1, placeholders::_2);
+
+	f6(80, 20);
+	f6(85, 10);
+	f6(90, 0);
+	f6(99, 99);
+
+	auto f7 = bind(fx, "亚瑟", placeholders::_1, placeholders::_2);
+
+	f7(99, 85);
+	f7(91, 80);
+	f7(5, 20);
 	
+
 	return 0;
 }
