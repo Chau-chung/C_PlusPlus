@@ -543,57 +543,62 @@ void fx(const string& name, int x, int y)
 
 // 调整可调用对象的参数个数或者顺序
 
-int main()
-{
-	//auto f1 = Sub;
-	//cout << f1(10, 5) << endl;
+// int main()
+// {
+// 	//auto f1 = Sub;
+// 	//cout << f1(10, 5) << endl;
 
-	//// 调整顺序
-	//auto f2 = bind(Sub, placeholders::_2, placeholders::_1);
-	//cout << f2(10, 5) << endl;
+// 	//// 调整顺序
+// 	//auto f2 = bind(Sub, placeholders::_2, placeholders::_1);
+// 	//cout << f2(10, 5) << endl;
 
-	//cout << typeid(f1).name() << endl;
-	//cout << typeid(f2).name() << endl;
+// 	//cout << typeid(f1).name() << endl;
+// 	//cout << typeid(f2).name() << endl;
 
-	auto f3 = bind(&Sub::sub, placeholders::_1, placeholders::_2, placeholders::_3);
-	cout << f3(Sub(), 10, 5) << endl;
+// 	auto f3 = bind(&Sub::sub, placeholders::_1, placeholders::_2, placeholders::_3);
+// 	cout << f3(Sub(), 10, 5) << endl;
 
-	Sub sub;
-	cout << f3(&sub, 10, 5) << endl;
+// 	Sub sub;
+// 	cout << f3(&sub, 10, 5) << endl;
 
-	auto f4 = bind(&Sub::sub, Sub(), placeholders::_1, placeholders::_2);
-	cout << f4(10, 5) << endl;
+// 	auto f4 = bind(&Sub::sub, Sub(), placeholders::_1, placeholders::_2);
+// 	cout << f4(10, 5) << endl;
 
-	auto f5 = bind(&Sub::sub, &sub, placeholders::_1, placeholders::_2);
-	cout << f5(10, 5) << endl;
+// 	auto f5 = bind(&Sub::sub, &sub, placeholders::_1, placeholders::_2);
+// 	cout << f5(10, 5) << endl;
 
-	fx("王昭君", 80, 20);
-	fx("王昭君", 85, 10);
-	fx("王昭君", 90, 0);
-	fx("王昭君", 99, 99);
+// 	fx("王昭君", 80, 20);
+// 	fx("王昭君", 85, 10);
+// 	fx("王昭君", 90, 0);
+// 	fx("王昭君", 99, 99);
 
-	fx("亚瑟", 99, 85);
-	fx("亚瑟", 91, 80);
-	fx("亚瑟", 5, 20);
+// 	fx("亚瑟", 99, 85);
+// 	fx("亚瑟", 91, 80);
+// 	fx("亚瑟", 5, 20);
 
-	auto f6 = bind(fx, "王昭君", placeholders::_1, placeholders::_2);
+// 	auto f6 = bind(fx, "王昭君", placeholders::_1, placeholders::_2);
 
-	f6(80, 20);
-	f6(85, 10);
-	f6(90, 0);
-	f6(99, 99);
+// 	f6(80, 20);
+// 	f6(85, 10);
+// 	f6(90, 0);
+// 	f6(99, 99);
 
-	auto f7 = bind(fx, "亚瑟", placeholders::_1, placeholders::_2);
+// 	auto f7 = bind(fx, "亚瑟", placeholders::_1, placeholders::_2);
 
-	f7(99, 85);
-	f7(91, 80);
-	f7(5, 20);
+// 	f7(99, 85);
+// 	f7(91, 80);
+// 	f7(5, 20);
 	
 
-	return 0;
-}
+// 	return 0;
+// }
 
 #include<thread>
 #include<mutex>
 #include<atomic>
 #include<condition_variable>
+
+int main()
+{
+	return 0;
+}
