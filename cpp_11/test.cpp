@@ -598,7 +598,27 @@ void fx(const string& name, int x, int y)
 #include<atomic>
 #include<condition_variable>
 
+void Print(int n, int i)
+{
+	for (; i < n; i++)
+	{
+		cout << i << endl;
+	}
+	cout << endl;
+}
+
 int main()
 {
+	thread t1(Print, 100, 0);
+	thread t2(Print, 200, 100);
+
+	cout << t1.get_id() << endl;
+	cout << t2.get_id() << endl;
+
+	t1.join();
+	t2.join();
+
+	cout << this_thread::get_id() << endl;
+
 	return 0;
 }
