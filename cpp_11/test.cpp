@@ -689,318 +689,423 @@ void fx(const string& name, int x, int y)
 //	return 0;
 //}
 
-class LockGuard
+// class LockGuard
+// {
+// public:
+// 	LockGuard(mutex& mtx)
+// 		:_mtx(mtx)
+// 	{
+// 		_mtx.lock();
+// 	}
+
+// 	~LockGuard()
+// 	{
+// 		_mtx.unlock();
+// 	}
+
+// private:
+// 	mutex& _mtx;
+// };
+
+// //int main()
+// //{
+// //	vector<thread> vthd;
+// //	int n;
+// //	cin >> n;
+// //
+// //	vthd.resize(n);
+// //
+// //	atomic<int> x = 0;
+// //	//int x = 0;
+// //	mutex mtx;
+// //
+// //	auto func = [&](int n) {
+// //		//mtx.lock();
+// //		// 局部域
+// //		{
+// //			//LockGuard lock(mtx);
+// //			//lock_guard<mutex> lock(mtx);
+// //			for (size_t i = 0; i < n; ++i)
+// //			{
+// //				++x;
+// //			}
+// //			//mtx.unlock();
+// //		}
+// //
+// //		//for (size_t i = 0; i < n; ++i)
+// //		//{
+// //		//	cout << i << endl;
+// //		//}
+// //
+// //		};
+// //
+// //	for(auto& thd: vthd)
+// //	{
+// //		// 移动赋值
+// //		thd = thread(func, 10000);
+// //	}
+// //
+// //	for (auto& thd : vthd)
+// //	{
+// //		thd.join();
+// //	}
+// //
+// //	cout << x << endl;
+// //	printf("%d\n", x.load());
+// //
+// //	return 0;
+// //}
+
+// //int main()
+// //{
+// //	std::mutex mtx;
+// //	condition_variable c;
+// //	int n = 100;
+// //	bool flag = true;
+// //
+// //	thread t2([&]() {
+// //		int j = 1;
+// //		while (j < n)
+// //		{
+// //			unique_lock<mutex> lock(mtx);
+// //			//c.wait(lock, [&]()->bool {return !flag; });
+// //			while (flag) c.wait(lock);
+// //
+// //			cout << j << endl;
+// //
+// //			j += 2; // 奇数
+// //			flag = true;
+// //
+// //			c.notify_one();
+// //		}
+// //	});
+// //
+// //	// this_thread::sleep_for(chrono::milliseconds(2000));
+// //
+// //	thread t1([&]() {
+// //		int i = 0;
+// //		while (i < n)
+// //		{
+// //			unique_lock<mutex> lock(mtx);
+// //			//c.wait(lock, [&]()->bool {return flag; });
+// //			while (!flag) c.wait(lock);
+// //
+// //			cout << i << endl;
+// //
+// //			i += 2; // 偶数
+// //			flag = false;
+// //
+// //			c.notify_one();
+// //		}
+// //	});
+// //
+// //	//thread t2([&]() {
+// //	//	int j = 1;
+// //	//	while (j < n)
+// //	//	{
+// //	//		unique_lock<mutex> lock(mtx);
+// //	//		c.wait(lock, [&]()->bool {return !flag; });
+// //	//		cout << j << endl;
+// //	//		j += 2; // 奇数
+// //	//		flag = true;
+// //	//		c.notify_one();
+// //	//	}
+// //	//});
+// //
+// //	t1.join();
+// //	t2.join();
+// //
+// //	return 0;
+// //}
+
+// //double Division(int a, int b)
+// //{
+// //	// 当b == 0时抛出异常
+// //	if (b == 0)
+// //		throw "Division by zero condition!";
+// //	else
+// //		return ((double)a / (double)b);
+// //}
+// //
+// //void Func()
+// //{
+// //	int len, time;
+// //	cin >> len >> time;
+// //	cout << Division(len, time) << endl;
+// //}
+// //
+// //int main()
+// //{
+// //	try 
+// //	{
+// //		Func();
+// //	}
+// //	catch (const char* errmsg)
+// //	{
+// //		cout << errmsg << endl;
+// //	}
+// //	catch (...) // 任意类型
+// //	{
+// //		cout << "unkown exception" << endl;
+// //	}
+// //
+// //	return 0;
+// //}
+
+// class Exception
+// {
+// public:
+// 	Exception(const string& errmsg, int id)
+// 		:_errmsg(errmsg)
+// 		, _id(id)
+// 	{}
+
+// 	virtual string what() const
+// 	{
+// 		return _errmsg;
+// 	}
+
+// protected:
+// 	string _errmsg;
+// 	int _id;
+// };
+
+// class SqlException : public Exception
+// {
+// public:
+// 	SqlException(const string& errmsg, int id, const string& sql = "")
+// 		:Exception(errmsg, id)
+// 		, _sql(sql)
+// 	{}
+
+// 	virtual string what() const
+// 	{
+// 		string str = "SqlException:";
+// 		str += _errmsg;
+// 		str += "->";
+// 		str += _sql;
+
+// 		return str;
+// 	}
+
+// private:
+// 	const string _sql;
+// };
+
+// class CacheException : public Exception
+// {
+// public:
+// 	CacheException(const string& errmsg, int id)
+// 		:Exception(errmsg, id)
+// 	{}
+
+// 	virtual string what() const
+// 	{
+// 		string str = "CacheException:";
+// 		str += _errmsg;
+
+// 		return str;
+// 	}
+// };
+
+// class HttpServerException : public Exception
+// {
+// public:
+// 	HttpServerException(const string& errmsg, int id, const string& type)
+// 		:Exception(errmsg, id)
+// 		, _type(type)
+// 	{}
+
+// 	virtual string what() const
+// 	{
+// 		string str = "HttpServerException:";
+// 		str += _type;
+// 		str += ":";
+// 		str += _errmsg;
+
+// 		return str;
+// 	}
+// private:
+// 	const string _type;
+// };
+
+// void SQLMgr()
+// {
+// 	srand(time(0));
+// 	if (rand() % 7 == 0)
+// 	{
+// 		throw SqlException("权限不足", 100, "select * from name = '张三'");
+// 	}
+// 	else
+// 	{
+// 		cout << "执行sql成功" << endl;
+// 	}
+
+// }
+// void CacheMgr()
+// {
+// 	srand(time(0));
+// 	if (rand() % 5 == 0)
+// 	{
+// 		throw CacheException("权限不足", 100);
+// 	}
+// 	else if (rand() % 6 == 0)
+// 	{
+// 		throw CacheException("数据不存在", 101);
+// 	}
+// 	else
+// 	{
+// 		cout << "CacheMgr处理请求成功" << endl;
+// 	}
+
+// 	SQLMgr();
+// }
+
+// void HttpServer()
+// {
+// 	// ...
+// 	srand(time(0));
+// 	if (rand() % 3 == 0)
+// 	{
+// 		throw HttpServerException("请求资源不存在", 100, "get");
+// 	}
+// 	else if (rand() % 4 == 0)
+// 	{
+// 		throw HttpServerException("权限不足", 101, "post");
+// 	}
+// 	else
+// 	{
+// 		cout << "HttpServer处理请求成功" << endl;
+// 	}
+
+// 	CacheMgr();
+// }
+
+// int main()
+// {
+// 	while (1)
+// 	{
+// 		this_thread::sleep_for(chrono::seconds(1));
+
+// 		try 
+// 		{
+// 			HttpServer();
+// 		}	
+// 		catch (const Exception& e) // 这里捕获父类对象就可以
+// 		{
+// 			// 多态
+// 			cout << e.what() << endl;
+// 		}
+// 		catch (...)
+// 		{
+// 			cout << "Unkown Exception" << endl;
+// 		}
+// 	}
+
+// 	return 0;
+// }
+
+#include <memory>
+
+//int main()
+//{
+//	auto_ptr<int> sp1(new int(1));
+//
+//	// C++98 转移管理权，sp1对象悬空
+//	auto_ptr<int> sp2(sp1);
+//
+//	*sp1 += 1;
+//
+//	return 0;
+//}
+
+class A
 {
 public:
-	LockGuard(mutex& mtx)
-		:_mtx(mtx)
+	A()
 	{
-		_mtx.lock();
+		cout << "A()" << endl;
 	}
-
-	~LockGuard()
+	
+	~A()
 	{
-		_mtx.unlock();
+		cout << "~A()" << endl;
 	}
 
 private:
-	mutex& _mtx;
+	int _a1 = 1;
+	int _a2 = 2;
 };
 
 //int main()
 //{
-//	vector<thread> vthd;
-//	int n;
-//	cin >> n;
+//	unique_ptr<A> sp1(new A());
+//	// unique_ptr<A> sp2(sp1); // error 不能拷贝构造
 //
-//	vthd.resize(n);
-//
-//	atomic<int> x = 0;
-//	//int x = 0;
-//	mutex mtx;
-//
-//	auto func = [&](int n) {
-//		//mtx.lock();
-//		// 局部域
-//		{
-//			//LockGuard lock(mtx);
-//			//lock_guard<mutex> lock(mtx);
-//			for (size_t i = 0; i < n; ++i)
-//			{
-//				++x;
-//			}
-//			//mtx.unlock();
-//		}
-//
-//		//for (size_t i = 0; i < n; ++i)
-//		//{
-//		//	cout << i << endl;
-//		//}
-//
-//		};
-//
-//	for(auto& thd: vthd)
-//	{
-//		// 移动赋值
-//		thd = thread(func, 10000);
-//	}
-//
-//	for (auto& thd : vthd)
-//	{
-//		thd.join();
-//	}
-//
-//	cout << x << endl;
-//	printf("%d\n", x.load());
+//	A* p = sp1.get();
+//	cout << p << endl;
 //
 //	return 0;
 //}
 
 //int main()
 //{
-//	std::mutex mtx;
-//	condition_variable c;
-//	int n = 100;
-//	bool flag = true;
+//	shared_ptr<A> sp1(new A);
+//	shared_ptr<A> sp2(sp1);
 //
-//	thread t2([&]() {
-//		int j = 1;
-//		while (j < n)
-//		{
-//			unique_lock<mutex> lock(mtx);
-//			//c.wait(lock, [&]()->bool {return !flag; });
-//			while (flag) c.wait(lock);
+//	cout << sp1.use_count() << endl;
+//	{
+//		shared_ptr<A> sp3(sp1);
+//		cout << sp1.use_count() << endl;
+//	}
 //
-//			cout << j << endl;
-//
-//			j += 2; // 奇数
-//			flag = true;
-//
-//			c.notify_one();
-//		}
-//	});
-//
-//	// this_thread::sleep_for(chrono::milliseconds(2000));
-//
-//	thread t1([&]() {
-//		int i = 0;
-//		while (i < n)
-//		{
-//			unique_lock<mutex> lock(mtx);
-//			//c.wait(lock, [&]()->bool {return flag; });
-//			while (!flag) c.wait(lock);
-//
-//			cout << i << endl;
-//
-//			i += 2; // 偶数
-//			flag = false;
-//
-//			c.notify_one();
-//		}
-//	});
-//
-//	//thread t2([&]() {
-//	//	int j = 1;
-//	//	while (j < n)
-//	//	{
-//	//		unique_lock<mutex> lock(mtx);
-//	//		c.wait(lock, [&]()->bool {return !flag; });
-//	//		cout << j << endl;
-//	//		j += 2; // 奇数
-//	//		flag = true;
-//	//		c.notify_one();
-//	//	}
-//	//});
-//
-//	t1.join();
-//	t2.join();
+//	cout << sp1.use_count() << endl;
 //
 //	return 0;
 //}
 
-//double Division(int a, int b)
-//{
-//	// 当b == 0时抛出异常
-//	if (b == 0)
-//		throw "Division by zero condition!";
-//	else
-//		return ((double)a / (double)b);
-//}
-//
-//void Func()
-//{
-//	int len, time;
-//	cin >> len >> time;
-//	cout << Division(len, time) << endl;
-//}
-//
-//int main()
-//{
-//	try 
-//	{
-//		Func();
-//	}
-//	catch (const char* errmsg)
-//	{
-//		cout << errmsg << endl;
-//	}
-//	catch (...) // 任意类型
-//	{
-//		cout << "unkown exception" << endl;
-//	}
-//
-//	return 0;
-//}
+#include "shared_ptr.h"
 
-class Exception
+mutex mtx;
+
+// 智能指针对象本身拷贝析构是线程安全的
+// 底层引用计数加减是线程安全的
+// 指向的资源访问不是线程安全的
+
+void func(sl::shared_ptr<list<int>> sp, int n)
 {
-public:
-	Exception(const string& errmsg, int id)
-		:_errmsg(errmsg)
-		, _id(id)
-	{}
+	cout << sp.use_count() << endl;
 
-	virtual string what() const
+	//mtx.lock();
+
+	for (int i = 0; i < n; ++i)
 	{
-		return _errmsg;
+		sl::shared_ptr<list<int>> copy1(sp);
+		sl::shared_ptr<list<int>> copy2(sp);
+		sl::shared_ptr<list<int>> copy3(sp);
+
+		mtx.lock();
+		sp->emplace_back(i);
+		mtx.unlock();
 	}
 
-protected:
-	string _errmsg;
-	int _id;
-};
-
-class SqlException : public Exception
-{
-public:
-	SqlException(const string& errmsg, int id, const string& sql = "")
-		:Exception(errmsg, id)
-		, _sql(sql)
-	{}
-
-	virtual string what() const
-	{
-		string str = "SqlException:";
-		str += _errmsg;
-		str += "->";
-		str += _sql;
-
-		return str;
-	}
-
-private:
-	const string _sql;
-};
-
-class CacheException : public Exception
-{
-public:
-	CacheException(const string& errmsg, int id)
-		:Exception(errmsg, id)
-	{}
-
-	virtual string what() const
-	{
-		string str = "CacheException:";
-		str += _errmsg;
-
-		return str;
-	}
-};
-
-class HttpServerException : public Exception
-{
-public:
-	HttpServerException(const string& errmsg, int id, const string& type)
-		:Exception(errmsg, id)
-		, _type(type)
-	{}
-
-	virtual string what() const
-	{
-		string str = "HttpServerException:";
-		str += _type;
-		str += ":";
-		str += _errmsg;
-
-		return str;
-	}
-private:
-	const string _type;
-};
-
-void SQLMgr()
-{
-	srand(time(0));
-	if (rand() % 7 == 0)
-	{
-		throw SqlException("权限不足", 100, "select * from name = '张三'");
-	}
-	else
-	{
-		cout << "执行sql成功" << endl;
-	}
-
-}
-void CacheMgr()
-{
-	srand(time(0));
-	if (rand() % 5 == 0)
-	{
-		throw CacheException("权限不足", 100);
-	}
-	else if (rand() % 6 == 0)
-	{
-		throw CacheException("数据不存在", 101);
-	}
-	else
-	{
-		cout << "CacheMgr处理请求成功" << endl;
-	}
-
-	SQLMgr();
-}
-
-void HttpServer()
-{
-	// ...
-	srand(time(0));
-	if (rand() % 3 == 0)
-	{
-		throw HttpServerException("请求资源不存在", 100, "get");
-	}
-	else if (rand() % 4 == 0)
-	{
-		throw HttpServerException("权限不足", 101, "post");
-	}
-	else
-	{
-		cout << "HttpServer处理请求成功" << endl;
-	}
-
-	CacheMgr();
+	//mtx.unlock();
 }
 
 int main()
 {
-	while (1)
-	{
-		this_thread::sleep_for(chrono::seconds(1));
+	sl::shared_ptr<list<int>> sp1(new list<int>);
+	cout << sp1.use_count() << endl;
 
-		try 
-		{
-			HttpServer();
-		}	
-		catch (const Exception& e) // 这里捕获父类对象就可以
-		{
-			// 多态
-			cout << e.what() << endl;
-		}
-		catch (...)
-		{
-			cout << "Unkown Exception" << endl;
-		}
-	}
+
+	thread t1(func, sp1, 1000);
+	thread t2(func, sp1, 2000);
+
+	t1.join();
+	t2.join();
+
+	cout << sp1->size() << endl;
+	cout << sp1.use_count() << endl;
 
 	return 0;
 }
